@@ -32,13 +32,12 @@ Quick Start
        h - go to parent directory
        ~ - go to $HOME directory
      0-9 - change tab
-  RETURN - open $SHELL on the current directory
-   SPACE - open $PAGER with the selected file
+       Q - open $SHELL on the current directory
        e - open $VISUAL or $EDITOR with the selected file
        / - start incremental search (RETURN to finish)
      n/N - create new file/directory
-       R - rename selected file or directory
-       D - delete selected file or (empty) directory
+ctrl + R - rename selected file or directory
+       x - delete selected file or directory
  ```
 
  Please read nover(1) for more information.
@@ -75,4 +74,4 @@ change Rover behavior without interfering with the global environment:
 License
 =======
 
-Under GPL3
+GPL3
