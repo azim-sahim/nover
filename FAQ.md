@@ -1,30 +1,30 @@
 # Frequently Asked Questions
 
-## How to use Rover to change the current directory of a shell?
+## How to use nover to change the current directory of a shell?
 
-Rover cannot change  the working directory of its  calling shell directly.
+Nover cannot change  the working directory of its  calling shell directly.
 However, we can use the option `--save-cwd` to write the last visited path
 to a temporary file. Then we can `cd` to that path from the shell itself.
 
 The following shell script can be used to automate this mechanism.
 Note that it needs to be sourced directly from the shell.
 
-```
+``` sh
 #! /bin/sh
 
 # Based on ranger launcher.
 
 # Usage:
-#     . ./cdrover.sh [/path/to/rover]
+#     . ./cdnover.sh [/path/to/nover]
 
-tempfile="$(mktemp 2> /dev/null || printf "/tmp/rover-cwd.%s" $$)"
+tempfile="$(mktemp 2> /dev/null || printf "/tmp/nover-cwd.%s" $$)"
 if [ $# -gt 0 ]; then
-    rover="$1"
+    nover="$1"
     shift
 else
-    rover="rover"
+    nover="nover"
 fi
-"$rover" --save-cwd "$tempfile" "$@"
+"$nover" --save-cwd "$tempfile" "$@"
 returnvalue=$?
 test -f "$tempfile" &&
 if [ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]; then
@@ -36,7 +36,7 @@ return $returnvalue
 
 ## How to open files with appropriate applications?
 
-Rover doesn't have any built-in functionality to associate file types with
+Nover doesn't have any built-in functionality to associate file types with
 applications. This  is delegated  to an external  tool, designated  by the
 environmental variable  `$ROVER_OPEN`. This  tool must  be a  command that
 takes a filename as argument and runs the appropriate program, opening the
@@ -44,7 +44,7 @@ given file.
 
 As an example, the following shell script may be used as `$ROVER_OPEN`:
 
-```
+``` sh
 #! /bin/sh
 
 # Usage:
@@ -67,3 +67,9 @@ esac
 
 exec sh -c "$(printf "$fmt" "\"$1\"")"
 ```
+or you can just use mimeopen and its alternatives
+
+## How to extract archives?
+
+Nover doesn't have any built-in functionality to interact with archives.
+But you can use $OPEN (or $ROVER_OPEN) to extracting
