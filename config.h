@@ -1,4 +1,4 @@
-#define RV_VERSION      "1.0.1"
+#define RV_VERSION      "1.0"
 
 /* CTRL+X: "^X"
    ALT+X: "M-X" */
@@ -12,31 +12,30 @@
 #define RVK_JUMP_BOTTOM "G"
 #define RVK_CD_DOWN     "l"
 #define RVK_CD_UP       "h"
-#define RVK_HOME        "H"
+#define RVK_HOME        "~"
+#define RVK_ROOT        "`"
 #define RVK_TARGET      "t"
-#define RVK_COPY_PATH   "y"
-#define RVK_PASTE_PATH  "p"
-#define RVK_REFRESH     "r"
-#define RVK_SHELL       "^M"
-#define RVK_VIEW        " "
+#define RVK_REFRESH     "R"
+#define RVK_SHELL       "Q"
 #define RVK_EDIT        "e"
+#define RVK_DROP        "z"
 #define RVK_OPEN        "o"
 #define RVK_SEARCH      "/"
 #define RVK_TG_FILES    "f"
 #define RVK_TG_DIRS     "d"
-#define RVK_TG_HIDDEN   "s"
+#define RVK_TG_HIDDEN   "."
 #define RVK_NEW_FILE    "n"
 #define RVK_NEW_DIR     "N"
-#define RVK_RENAME      "R"
-#define RVK_TG_EXEC     "E"
-#define RVK_DELETE      "D"
-#define RVK_TG_MARK     "m"
-#define RVK_INVMARK     "M"
+#define RVK_RENAME      "^R"
+#define RVK_RENAMEMUL   "r"
+#define RVK_TG_EXEC     "*"
+#define RVK_DELETE      "x"
+#define RVK_TG_MARK     " "
+#define RVK_INVMARK     "m"
 #define RVK_MARKALL     "a"
 #define RVK_MARK_DELETE "X"
-#define RVK_MARK_COPY   "C"
-#define RVK_MARK_MOVE   "V"
-
+#define RVK_MARK_COPY   "p"
+#define RVK_MARK_MOVE   "v"
 /* Colors available: DEFAULT, RED, GREEN, YELLOW, BLUE, CYAN, MAGENTA, WHITE, BLACK. */
 #define RVC_CWD         GREEN
 #define RVC_STATUS      CYAN
@@ -46,7 +45,7 @@
 #define RVC_HIDDEN      YELLOW
 #define RVC_EXEC        GREEN
 #define RVC_REG         DEFAULT
-#define RVC_DIR         DEFAULT
+#define RVC_DIR         BLUE
 #define RVC_CHR         MAGENTA
 #define RVC_BLK         MAGENTA
 #define RVC_FIFO        BLUE
@@ -67,7 +66,7 @@
 #define RVP_RENAME      RV_PROMPT("rename")
 
 /* Number of entries to jump on RVK_JUMP_DOWN and RVK_JUMP_UP. */
-#define RV_JUMP         10
+#define RV_JUMP         5
 
 /* Default listing view flags.
    May include SHOW_FILES, SHOW_DIRS and SHOW_HIDDEN. */
