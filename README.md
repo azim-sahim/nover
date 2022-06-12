@@ -69,9 +69,3 @@ change Rover behavior without interfering with the global environment:
  ```
 
  Please read nover(1) for more information.
-
-
-License
-=======
-
-GPL3
