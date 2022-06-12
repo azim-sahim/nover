@@ -1041,18 +1041,18 @@ main(int argc, char *argv[])
 
     if (argc >= 2) {
         if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
-            printf("rover %s\n", RV_VERSION);
+            printf("nover %s - fork of rover 1.0.1\n", RV_VERSION);
             return 0;
         } else if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
             printf(
-                "Usage: rover [OPTIONS] [DIR [DIR [...]]]\n"
+                "Usage: nover [OPTIONS] [DIR [DIR [...]]]\n"
                 "       Browse current directory or the ones specified.\n\n"
-                "  or:  rover -h|--help\n"
+                "  or:  nover -h|--help\n"
                 "       Print this help message and exit.\n\n"
-                "  or:  rover -v|--version\n"
+                "  or:  nover -v|--version\n"
                 "       Print program version and exit.\n\n"
-                "See rover(1) for more information.\n"
-                "Rover homepage: <https://github.com/lecram/rover>.\n"
+                "See nover(1) for more information.\n"
+                "Nover homepage: <https://github.com/azim-sahim/nover>.\n"
             );
             return 0;
         } else if (!strcmp(argv[1], "-d") || !strcmp(argv[1], "--save-cwd")) {
@@ -1113,11 +1113,15 @@ main(int argc, char *argv[])
             spawn((char *[]) {"man", "rover", NULL});
         } else if (!strcmp(key, RVK_DOWN)) {
             if (!rover.nfiles) continue;
-            ESEL = MIN(ESEL + 1, rover.nfiles - 1);
+            ESEL = (ESEL + 1) % rover.nfiles;
             update_view();
         } else if (!strcmp(key, RVK_UP)) {
             if (!rover.nfiles) continue;
-            ESEL = MAX(ESEL - 1, 0);
+            ESEL = (ESEL - 1); //  rover.nfiles; % rover.nfiles;
+            if (ESEL == -1){
+                ESEL=rover.nfiles;
+            }
+            //ESEL = MAX(ESEL - 1, 0);
             update_view();
         } else if (!strcmp(key, RVK_JUMP_DOWN)) {
             if (!rover.nfiles) continue;
@@ -1166,71 +1170,10 @@ main(int argc, char *argv[])
             if (CWD[strlen(CWD) - 1] != '/')
                 strcat(CWD, "/");
             cd(1);
-        } else if (!strcmp(key, RVK_TARGET)) {
-            char *bname, first;
-            int is_dir = S_ISDIR(EMODE(ESEL));
-            ssize_t len = readlink(ENAME(ESEL), BUF1, BUFLEN-1);
-            if (len == -1) continue;
-            BUF1[len] = '\0';
-            if (access(BUF1, F_OK) == -1) {
-                char *msg;
-                switch (errno) {
-                case EACCES:
-                    msg = "Cannot access \"%s\".";
-                    break;
-                case ENOENT:
-                    msg = "\"%s\" does not exist.";
-                    break;
-                default:
-                    msg = "Cannot navigate to \"%s\".";
-                }
-                strcpy(BUF2, BUF1); /* message() uses BUF1. */
-                message(RED, msg, BUF2);
-                continue;
-            }
-            realpath(BUF1, CWD);
-            len = strlen(CWD);
-            if (CWD[len - 1] == '/')
-                CWD[len - 1] = '\0';
-            bname = strrchr(CWD, '/') + 1;
-            first = *bname;
-            *bname = '\0';
+        } else if (!strcmp(key, RVK_ROOT)) {
+            strcpy(CWD, "/");
             cd(1);
-            *bname = first;
-            if (is_dir)
-                strcat(CWD, "/");
-            try_to_sel(bname);
-            *bname = '\0';
-            update_view();
-        } else if (!strcmp(key, RVK_COPY_PATH)) {
-            clip_path = getenv("CLIP");
-            if (!clip_path) goto copy_path_fail;
-            clip_file = fopen(clip_path, "w");
-            if (!clip_file) goto copy_path_fail;
-            fprintf(clip_file, "%s%s\n", CWD, ENAME(ESEL));
-            fclose(clip_file);
-            goto copy_path_done;
-copy_path_fail:
-            strcpy(CLIPBOARD, CWD);
-            strcat(CLIPBOARD, ENAME(ESEL));
-copy_path_done:
-            ;
-        } else if (!strcmp(key, RVK_PASTE_PATH)) {
-            clip_path = getenv("CLIP");
-            if (!clip_path) goto paste_path_fail;
-            clip_file = fopen(clip_path, "r");
-            if (!clip_file) goto paste_path_fail;
-            fscanf(clip_file, "%s\n", CLIPBOARD);
-            fclose(clip_file);
-paste_path_fail:
-            strcpy(BUF1, CLIPBOARD);
-            strcpy(CWD, dirname(BUF1));
-            if (strcmp(CWD, "/"))
-                strcat(CWD, "/");
-            cd(1);
-            strcpy(BUF1, CLIPBOARD);
-            try_to_sel(strstr(CLIPBOARD, basename(BUF1)));
-            update_view();
+
         } else if (!strcmp(key, RVK_REFRESH)) {
             reload();
         } else if (!strcmp(key, RVK_SHELL)) {
@@ -1243,13 +1186,12 @@ paste_path_fail:
 #endif
                 reload();
             }
-        } else if (!strcmp(key, RVK_VIEW)) {
-            if (!rover.nfiles || S_ISDIR(EMODE(ESEL))) continue;
-            if (open_with_env(user_pager, ENAME(ESEL)))
-                cd(0);
         } else if (!strcmp(key, RVK_EDIT)) {
             if (!rover.nfiles || S_ISDIR(EMODE(ESEL))) continue;
             if (open_with_env(user_editor, ENAME(ESEL)))
+                cd(0);
+        } else if (!strcmp(key, RVK_DROP)) {
+            if (open_with_env("dragon", ENAME(ESEL)))
                 cd(0);
         } else if (!strcmp(key, RVK_OPEN)) {
             if (!rover.nfiles || S_ISDIR(EMODE(ESEL))) continue;
@@ -1420,13 +1362,11 @@ paste_path_fail:
             }
         } else if (!strcmp(key, RVK_DELETE)) {
             if (rover.nfiles) {
-                message(YELLOW, "Delete \"%s\"? (Y/n)", ENAME(ESEL));
-                if (rover_getch() == 'Y') {
+                message(YELLOW, "Delete \"%s\"? (y/n)", ENAME(ESEL));
+                if (rover_getch() == 'y') {
                     const char *name = ENAME(ESEL);
-                    int ret = ISDIR(ENAME(ESEL)) ? deldir(name) : delfile(name);
-                    reload();
-                    if (ret)
-                        message(RED, "Could not delete \"%s\".", ENAME(ESEL));
+                    if (open_with_env("rm -rf", ENAME(ESEL)))
+                      cd(0);
                 } else
                     clear_message();
             } else
@@ -1457,8 +1397,8 @@ paste_path_fail:
             update_view();
         } else if (!strcmp(key, RVK_MARK_DELETE)) {
             if (rover.marks.nentries) {
-                message(YELLOW, "Delete all marked entries? (Y/n)");
-                if (rover_getch() == 'Y')
+                message(YELLOW, "Delete all marked entries? (y/n)");
+                if (rover_getch() == 'y')
                     process_marked(NULL, delfile, deldir, "Deleting", "Deleted");
                 else
                     clear_message();
