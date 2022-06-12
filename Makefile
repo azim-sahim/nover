@@ -11,21 +11,21 @@ PKG_CONFIG ?= pkg-config
 CFLAGS_NCURSESW := `$(PKG_CONFIG) --cflags ncursesw`
 LIBS_NCURSESW := `$(PKG_CONFIG) --libs ncursesw`
 
-all: rover
+all: nover
 
-rover: rover.c config.h
+nover: nover.c config.h
 	$(CC) $(CFLAGS) $(CFLAGS_NCURSESW) -o $@ $< $(LDFLAGS) $(LIBS_NCURSESW)
 
-install: rover
-	rm -f $(DESTDIR)$(BINDIR)/rover
+install: nover
+	rm -f $(DESTDIR)$(BINDIR)/nover
 	mkdir -p $(DESTDIR)$(BINDIR)
-	cp rover $(DESTDIR)$(BINDIR)/rover
+	cp nover $(DESTDIR)$(BINDIR)/nover
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
-	cp rover.1 $(DESTDIR)$(MANDIR)/man1/rover.1
+	cp nover.1 $(DESTDIR)$(MANDIR)/man1/nover.1
 
 uninstall:
-	rm -f $(DESTDIR)$(BINDIR)/rover
-	rm -f $(DESTDIR)$(MANDIR)/man1/rover.1
+	rm -f $(DESTDIR)$(BINDIR)/nover
+	rm -f $(DESTDIR)$(MANDIR)/man1/nover.1
 
 clean:
-	rm -f rover
+	rm -f nover
