@@ -380,6 +380,7 @@ shell_escaped_cat(char *buf, char *str, size_t n)
         }
     }
 done:
+    *p = '\0';
     strncat(p, "'", n);
 }
 
